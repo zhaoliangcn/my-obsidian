@@ -1,0 +1,101 @@
+{
+  "name": "my-obsidian",
+  "version": "0.1.0",
+  "description": "A modern, open-source Markdown knowledge base tool inspired by Obsidian",
+  "author": "MyObsidian Contributors",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "dist-electron/main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/my-obsidian.git"
+  },
+  "bugs": {
+    "url": "https://github.com/YOUR_USERNAME/my-obsidian/issues"
+  },
+  "homepage": "https://github.com/YOUR_USERNAME/my-obsidian#readme",
+  "keywords": [
+    "markdown",
+    "knowledge-base",
+    "note-taking",
+    "electron",
+    "react",
+    "typescript",
+    "obsidian",
+    "mind-map",
+    "ai-assistant"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "electron:dev": "tsc -p tsconfig.preload.json && NODE_ENV=development tsx electron/main.ts",
+    "electron:start": "concurrently -k \"npm run dev\" \"sleep 2 && tsc -p tsconfig.preload.json && npm run electron:dev\"",
+    "build": "tsc -b && vite build",
+    "electron:build": "npm run build && tsc -p tsconfig.electron.json && tsc -p tsconfig.preload.json && electron-builder",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "d3": "^7.9.0",
+    "docx": "^9.6.1",
+    "html2pdf.js": "^0.14.0",
+    "lucide-react": "^1.14.0",
+    "marked": "^18.0.3",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "uuid": "^14.0.0",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/d3": "^7.4.3",
+    "@types/node": "^24.12.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react": "^6.0.1",
+    "concurrently": "^9.2.1",
+    "electron": "^39.2.7",
+    "electron-builder": "^26.0.12",
+    "eslint": "^10.2.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.5.0",
+    "tsx": "^4.21.0",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.58.2",
+    "vite": "^8.0.10"
+  },
+  "build": {
+    "appId": "com.myobsidian.app",
+    "productName": "MyObsidian",
+    "electronDownload": {
+      "mirror": "https://npmmirror.com/mirrors/electron/"
+    },
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "asar": false,
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    }
+  }
+}

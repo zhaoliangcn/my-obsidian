@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2023",
+    "module": "commonjs",
+    "moduleResolution": "node10",
+    "ignoreDeprecations": "6.0",
+    "lib": ["ES2023"],
+    "outDir": "dist-electron",
+    "rootDir": "electron",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": false,
+    "sourceMap": true
+  },
+  "include": ["electron/preload.ts"]
+}
