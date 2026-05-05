@@ -38,7 +38,7 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/YOUR_USERNAME/my-obsidian.git
+git clone https://github.com/zhaoliangcn/my-obsidian.git
 cd my-obsidian
 
 # 安装依赖

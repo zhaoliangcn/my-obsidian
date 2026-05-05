@@ -38,7 +38,7 @@ English | [简体中文](README_zh-CN.md)
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/my-obsidian.git
+git clone https://github.com/zhaoliangcn/my-obsidian.git
 cd my-obsidian
 
 # Install dependencies
