@@ -1,4 +1,5 @@
 import { marked } from 'marked'
+import type { Tokens } from 'marked'
 import {
   Document,
   Packer,
@@ -26,40 +27,54 @@ function parseMarkdownToBlocks(content: string): ParsedBlock[] {
 
   for (const token of tokens) {
     switch (token.type) {
-      case 'heading':
+      case 'heading': {
+        const t = token as Tokens.Heading
         blocks.push({
           type: 'heading',
-          text: (token as any).text,
-          level: (token as any).depth,
+          text: t.text,
+          level: t.depth,
         })
         break
-      case 'paragraph':
-        blocks.push({ type: 'paragraph', text: (token as any).text })
+      }
+      case 'paragraph': {
+        const t = token as Tokens.Paragraph
+        blocks.push({ type: 'paragraph', text: t.text })
         break
-      case 'list':
-        for (const item of (token as any).items) {
+      }
+      case 'list': {
+        const t = token as Tokens.List
+        for (const item of t.items) {
           blocks.push({
-            type: (token as any).ordered ? 'orderedListItem' : 'listItem',
+            type: t.ordered ? 'orderedListItem' : 'listItem',
             text: item.text,
           })
         }
         break
-      case 'code':
-        blocks.push({ type: 'code', text: (token as any).text })
+      }
+      case 'code': {
+        const t = token as Tokens.Code
+        blocks.push({ type: 'code', text: t.text })
         break
-      case 'blockquote':
-        blocks.push({ type: 'blockquote', text: (token as any).text ?? '' })
+      }
+      case 'blockquote': {
+        const t = token as Tokens.Blockquote
+        blocks.push({ type: 'blockquote', text: t.text ?? '' })
         break
+      }
       case 'hr':
         blocks.push({ type: 'hr', text: '' })
         break
-      case 'table':
-        blocks.push({ type: 'table', text: JSON.stringify(token) })
+      case 'table': {
+        const t = token as Tokens.Table
+        blocks.push({ type: 'table', text: JSON.stringify(t) })
         break
-      default:
-        if ((token as any).text) {
-          blocks.push({ type: 'paragraph', text: String((token as any).text) })
+      }
+      default: {
+        const t = token as Tokens.Generic
+        if (t.text) {
+          blocks.push({ type: 'paragraph', text: String(t.text) })
         }
+      }
     }
   }
 
@@ -82,7 +97,7 @@ function inlineFormat(text: string): TextRun[] {
     } else if (match[4]) {
       runs.push(new TextRun({ text: match[4], italics: true }))
     } else if (match[6]) {
-      runs.push(new TextRun({ text: match[6], font: 'Consolas', highlight: 'F5F5F5' as any }))
+      runs.push(new TextRun({ text: match[6], font: 'Consolas', highlight: 'lightGray' }))
     }
 
     lastIndex = match.index + match[0].length
@@ -159,7 +174,7 @@ export async function exportToDocx(title: string, content: string): Promise<void
                 text: block.text,
                 font: 'Consolas',
                 size: 20,
-                highlight: 'F5F5F5' as any,
+                highlight: 'lightGray',
               }),
             ],
             indent: { left: 360, right: 360 },
@@ -190,23 +205,23 @@ export async function exportToDocx(title: string, content: string): Promise<void
         break
       case 'table': {
         try {
-          const tableData = JSON.parse(block.text)
+          const tableData = JSON.parse(block.text) as { header: string[]; rows: string[][] }
           if (tableData.header && tableData.rows) {
             const rows = [
               new TableRow({
-                children: (tableData.header as string[]).map(
-                  (cell: string) =>
+                children: tableData.header.map(
+                  (cell) =>
                     new TableCell({
                       children: [new Paragraph({ children: [new TextRun({ text: cell, bold: true })] })],
                       shading: { fill: 'F0F0F0' },
                     })
                 ),
               }),
-              ...(tableData.rows as string[][]).map(
-                (row: string[]) =>
+              ...tableData.rows.map(
+                (row) =>
                   new TableRow({
                     children: row.map(
-                      (cell: string) =>
+                      (cell) =>
                         new TableCell({
                           children: [new Paragraph({ children: [new TextRun(cell)] })],
                         })

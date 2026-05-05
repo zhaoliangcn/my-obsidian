@@ -221,14 +221,12 @@ export default function FileExplorer() {
       return
     }
 
-    let imported = 0
     for (const file of mdFiles) {
       const reader = new FileReader()
       reader.onload = (event) => {
         const content = event.target?.result as string
         const title = file.name.replace(/\.md$/i, '')
         importNote(title, content)
-        imported++
       }
       reader.readAsText(file)
     }

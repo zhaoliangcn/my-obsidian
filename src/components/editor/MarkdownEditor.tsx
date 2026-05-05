@@ -48,21 +48,22 @@ export default function MarkdownEditor() {
   }, [editingTitle])
 
   useEffect(() => {
-    if (previewRef.current) {
-      const handleWikiClick = (e: MouseEvent) => {
-        const target = e.target as HTMLElement
-        if (target.classList.contains('wiki-link')) {
-          e.preventDefault()
-          const noteTitle = target.getAttribute('data-note-title')
-          if (noteTitle) {
-            navigateToNote(noteTitle)
-          }
+    const el = previewRef.current
+    if (!el) return
+
+    const handleWikiClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      if (target.classList.contains('wiki-link')) {
+        e.preventDefault()
+        const noteTitle = target.getAttribute('data-note-title')
+        if (noteTitle) {
+          navigateToNote(noteTitle)
         }
       }
-      previewRef.current.addEventListener('click', handleWikiClick)
-      return () => {
-        previewRef.current?.removeEventListener('click', handleWikiClick)
-      }
+    }
+    el.addEventListener('click', handleWikiClick)
+    return () => {
+      el.removeEventListener('click', handleWikiClick)
     }
   }, [activeNote?.content, navigateToNote])
 

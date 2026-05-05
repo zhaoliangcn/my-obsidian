@@ -255,7 +255,7 @@ export const useStore = create<AppState>()(
         }
 
         set((state) => {
-          const { [id]: _, ...rest } = state.notes
+          const { [id]: _removed, ...rest } = state.notes
           const newActiveId =
             state.activeNoteId === id
               ? Object.keys(rest)[0] || null
@@ -292,7 +292,9 @@ export const useStore = create<AppState>()(
           const newPath = parts.join('/')
 
           if (isVaultOpen()) {
-            note.content && writeFile(newPath, note.content).catch(() => {})
+            if (note.content) {
+              writeFile(newPath, note.content).catch(() => {})
+            }
             deleteFile(oldPath).catch(() => {})
           }
 
