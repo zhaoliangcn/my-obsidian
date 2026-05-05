@@ -40,7 +40,7 @@ Enhancement suggestions are tracked as GitHub issues. When creating one:
 
 ```bash
 # Fork and clone the repository
-git clone https://github.com/YOUR_USERNAME/my-obsidian.git
+git clone https://github.com/zhaoliangcn/my-obsidian.git
 cd my-obsidian
 
 # Install dependencies
