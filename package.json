@@ -9,12 +9,12 @@
   "main": "dist-electron/main.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/my-obsidian.git"
+    "url": "https://github.com/zhaoliangcn/my-obsidian.git"
   },
   "bugs": {
-    "url": "https://github.com/YOUR_USERNAME/my-obsidian/issues"
+    "url": "https://github.com/zhaoliangcn/my-obsidian/issues"
   },
-  "homepage": "https://github.com/YOUR_USERNAME/my-obsidian#readme",
+  "homepage": "https://github.com/zhaoliangcn/my-obsidian#readme",
   "keywords": [
     "markdown",
     "knowledge-base",

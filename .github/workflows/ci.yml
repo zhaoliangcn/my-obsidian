@@ -78,9 +78,7 @@ jobs:
         run: npm install
 
       - name: Build Electron app
-        run: npm run electron:build
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run build && tsc -p tsconfig.electron.json && tsc -p tsconfig.preload.json && npx electron-builder --publish=never
 
       - name: Upload Electron artifacts
         uses: actions/upload-artifact@v4
