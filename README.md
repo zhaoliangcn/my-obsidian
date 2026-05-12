@@ -25,7 +25,7 @@ English | [简体中文](README_zh-CN.md)
 
 ## Screenshots
 
-> Add screenshots here after taking them
+> ![screenshots](screenshots.png)
 
 ## Quick Start
 

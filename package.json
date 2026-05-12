@@ -28,8 +28,8 @@
   ],
   "scripts": {
     "dev": "vite",
-    "electron:dev": "tsc -p tsconfig.preload.json && NODE_ENV=development tsx electron/main.ts",
-    "electron:start": "concurrently -k \"npm run dev\" \"sleep 2 && tsc -p tsconfig.preload.json && npm run electron:dev\"",
+    "electron:dev": "tsc -p tsconfig.preload.json && tsc -p tsconfig.electron.json && NODE_ENV=development electron dist-electron/main.js --no-sandbox",
+    "electron:start": "concurrently -k \"npm run dev\" \"sleep 2 && npm run electron:dev\"",
     "build": "tsc -b && vite build",
     "electron:build": "npm run build && tsc -p tsconfig.electron.json && tsc -p tsconfig.preload.json && electron-builder",
     "lint": "eslint .",
@@ -83,7 +83,6 @@
     "mac": {
       "category": "public.app-category.productivity",
       "target": [
-        "dmg",
         "zip"
       ]
     },
