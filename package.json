@@ -84,7 +84,8 @@
       "category": "public.app-category.productivity",
       "target": [
         "zip"
-      ]
+      ],
+      "icon": "build/icon.ico"
     },
     "win": {
       "target": [
