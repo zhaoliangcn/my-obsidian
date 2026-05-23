@@ -14,6 +14,7 @@ import {
   isVaultOpen,
   writeFile,
   deleteFile,
+  moveFile,
   createDirectory,
   deleteDirectory,
   listAllFiles,
@@ -37,6 +38,7 @@ interface AppState {
 
   createNote: (folderPath?: string) => string
   deleteNote: (id: string) => void
+  moveNote: (id: string, targetFolderPath: string) => void
   updateNoteContent: (id: string, content: string) => void
   updateNoteTitle: (id: string, title: string) => void
   setActiveNote: (id: string | null) => void
@@ -196,6 +198,12 @@ function syncDeleteFile(path: string) {
   }
 }
 
+function syncMoveFile(oldPath: string, newPath: string) {
+  if (isVaultOpen()) {
+    moveFile(oldPath, newPath).catch(() => {})
+  }
+}
+
 function syncCreateDir(path: string) {
   if (isVaultOpen()) {
     createDirectory(path).catch(() => {})
@@ -264,6 +272,26 @@ export const useStore = create<AppState>()(
               ? Object.keys(rest)[0] || null
               : state.activeNoteId
           return { notes: rest, activeNoteId: newActiveId }
+        })
+      },
+
+      moveNote: (id: string, targetFolderPath: string) => {
+        set((state) => {
+          const note = state.notes[id]
+          if (!note) return state
+
+          const oldPath = note.path
+          const fileName = oldPath.split('/').pop()!
+          const newPath = targetFolderPath ? `${targetFolderPath}/${fileName}` : fileName
+
+          syncMoveFile(oldPath, newPath)
+
+          return {
+            notes: {
+              ...state.notes,
+              [id]: { ...note, path: newPath, updatedAt: Date.now() },
+            },
+          }
         })
       },
 

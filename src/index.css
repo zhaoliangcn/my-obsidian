@@ -241,6 +241,45 @@ body {
   background: var(--bg-hover);
 }
 
+.context-menu.move-menu {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.menu-item:hover {
+  background: var(--bg-hover);
+}
+
+.menu-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 4px 0;
+}
+
+.folder-drag-over {
+  background: var(--accent-light);
+  border-radius: var(--radius-sm);
+}
+
+.folder-drag-over .tree-item {
+  background: var(--accent-color);
+  opacity: 0.1;
+}
+
 .new-folder-input {
   padding: 4px 12px;
 }

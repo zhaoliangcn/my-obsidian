@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import { useStore } from '../../store'
 import type { TreeNode, Folder, NoteRef } from '../../types'
 import {
@@ -75,25 +75,62 @@ function TreeNodeItem({
 }) {
   const [expanded, setExpanded] = useState(true)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [moveMenuOpen, setMoveMenuOpen] = useState(false)
+  const [isDragOver, setIsDragOver] = useState(false)
+  const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null)
   const activeNoteId = useStore((s) => s.activeNoteId)
   const setActiveNote = useStore((s) => s.setActiveNote)
   const deleteNote = useStore((s) => s.deleteNote)
   const deleteFolder = useStore((s) => s.deleteFolder)
   const exportNote = useStore((s) => s.exportNote)
+  const moveNote = useStore((s) => s.moveNote)
+  const folders = useStore((s) => s.folders)
+
+  useEffect(() => {
+    if (!contextMenuPos) return
+
+    const handleClick = () => setContextMenuPos(null)
+    document.addEventListener('click', handleClick)
+    return () => document.removeEventListener('click', handleClick)
+  }, [contextMenuPos])
 
   if ('kind' in node && node.kind === 'note') {
     const noteRef = node as NoteRef
     const isActive = activeNoteId === noteRef.id
+
+    const handleDragStart = (e: React.DragEvent) => {
+      e.dataTransfer.setData('text/plain', noteRef.id)
+      e.dataTransfer.effectAllowed = 'move'
+    }
+
+    const handleContextMenu = (e: React.MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setContextMenuPos({ x: e.clientX, y: e.clientY })
+    }
 
     return (
       <div
         className={`tree-item note-item ${isActive ? 'active' : ''}`}
         style={{ paddingLeft: depth * 16 + 8 }}
         onClick={() => setActiveNote(noteRef.id)}
+        onContextMenu={handleContextMenu}
+        draggable
+        onDragStart={handleDragStart}
       >
         <FileText size={14} className="tree-icon" />
         <span className="tree-label">{noteRef.title}</span>
         <div className="tree-actions">
+          <button
+            className="icon-btn-small"
+            onClick={(e) => {
+              e.stopPropagation()
+              setMoveMenuOpen(!moveMenuOpen)
+            }}
+            title="移动到文件夹"
+          >
+            <Upload size={12} />
+          </button>
           <button
             className="icon-btn-small"
             onClick={(e) => {
@@ -114,15 +151,123 @@ function TreeNodeItem({
           >
             <Trash2 size={12} />
           </button>
+          {moveMenuOpen && (
+            <div className="context-menu move-menu">
+              <div
+                className="menu-item"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  moveNote(noteRef.id, '')
+                  setMoveMenuOpen(false)
+                }}
+              >
+                <FolderIcon size={12} /> 根目录
+              </div>
+              {folders.map((folder) => (
+                <div
+                  key={folder.id}
+                  className="menu-item"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    moveNote(noteRef.id, folder.path)
+                    setMoveMenuOpen(false)
+                  }}
+                >
+                  <FolderIcon size={12} /> {folder.name}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+        {contextMenuPos && (
+          <div
+            className="context-menu"
+            style={{
+              position: 'fixed',
+              left: contextMenuPos.x,
+              top: contextMenuPos.y,
+            }}
+          >
+            <div
+              className="menu-item"
+              onClick={(e) => {
+                e.stopPropagation()
+                exportNote(noteRef.id)
+                setContextMenuPos(null)
+              }}
+            >
+              <Download size={12} /> 导出笔记
+            </div>
+            <div
+              className="menu-item"
+              onClick={(e) => {
+                e.stopPropagation()
+                deleteNote(noteRef.id)
+                setContextMenuPos(null)
+              }}
+            >
+              <Trash2 size={12} /> 删除笔记
+            </div>
+            <div className="menu-divider" />
+            {folders.map((folder) => (
+              <div
+                key={folder.id}
+                className="menu-item"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  moveNote(noteRef.id, folder.path)
+                  setContextMenuPos(null)
+                }}
+              >
+                <Upload size={12} /> 移动到 {folder.name}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     )
   }
 
   const folder = node as Folder
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.dataTransfer.dropEffect = 'move'
+    setIsDragOver(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(false)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(false)
+
+    const noteId = e.dataTransfer.getData('text/plain')
+    if (noteId) {
+      moveNote(noteId, folder.path)
+    }
+  }
+
+  const handleFolderContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setContextMenuPos({ x: e.clientX, y: e.clientY })
+  }
+
   return (
-    <div>
+    <div
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      onContextMenu={handleFolderContextMenu}
+      className={isDragOver ? 'folder-drag-over' : ''}
+    >
       <div
         className="tree-item folder-item"
         style={{ paddingLeft: depth * 16 + 8 }}
@@ -172,6 +317,37 @@ function TreeNodeItem({
           )}
         </div>
       </div>
+      {contextMenuPos && (
+        <div
+          className="context-menu"
+          style={{
+            position: 'fixed',
+            left: contextMenuPos.x,
+            top: contextMenuPos.y,
+          }}
+        >
+          <div
+            className="menu-item"
+            onClick={(e) => {
+              e.stopPropagation()
+              useStore.getState().createNote(folder.path)
+              setContextMenuPos(null)
+            }}
+          >
+            <Plus size={12} /> 新建笔记
+          </div>
+          <div
+            className="menu-item"
+            onClick={(e) => {
+              e.stopPropagation()
+              deleteFolder(folder.path)
+              setContextMenuPos(null)
+            }}
+          >
+            <Trash2 size={12} /> 删除文件夹
+          </div>
+        </div>
+      )}
       {expanded &&
         folder.children.map((child) => (
           <TreeNodeItem

@@ -46,6 +46,15 @@ export async function deleteFile(relativePath: string): Promise<void> {
   await api.file.delete(relativePath)
 }
 
+export async function moveFile(oldPath: string, newPath: string): Promise<void> {
+  const api = getAPI()
+  if (!api) throw new Error('未打开 Vault 目录')
+  const content = await api.file.read(oldPath)
+  if (content === null) throw new Error(`文件不存在: ${oldPath}`)
+  await api.file.write(newPath, content)
+  await api.file.delete(oldPath)
+}
+
 export async function createDirectory(relativePath: string): Promise<void> {
   const api = getAPI()
   if (!api) throw new Error('未打开 Vault 目录')
