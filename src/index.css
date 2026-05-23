@@ -220,6 +220,7 @@ body {
   box-shadow: var(--shadow-md);
   z-index: 100;
   min-width: 140px;
+  max-width: 240px;
   padding: 4px;
 }
 
