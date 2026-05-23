@@ -63,11 +63,7 @@ export default function App() {
           <MarkdownEditor />
         </div>
 
-        {rightPanelVisible && (
-          <div className="right-panel-container">
-            <RightPanel />
-          </div>
-        )}
+        {rightPanelVisible && <RightPanel />}
       </div>
     </div>
   )

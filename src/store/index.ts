@@ -28,6 +28,7 @@ interface AppState {
   sidebarVisible: boolean
   rightPanelVisible: boolean
   rightPanelTab: RightPanelTab
+  rightPanelWidth: number
   theme: Theme
   searchQuery: string
   aiConfig: AiConfig
@@ -42,6 +43,7 @@ interface AppState {
   toggleSidebar: () => void
   toggleRightPanel: () => void
   setRightPanelTab: (tab: RightPanelTab) => void
+  setRightPanelWidth: (width: number) => void
   setTheme: (theme: Theme) => void
   setSearchQuery: (query: string) => void
   createFolder: (parentPath: string, name: string) => void
@@ -215,6 +217,7 @@ export const useStore = create<AppState>()(
       sidebarVisible: true,
       rightPanelVisible: true,
       rightPanelTab: 'backlinks',
+      rightPanelWidth: 300,
       theme: 'dark',
       searchQuery: '',
       aiConfig: getDefaultConfig('ollama'),
@@ -315,6 +318,8 @@ export const useStore = create<AppState>()(
         set((s) => ({ rightPanelVisible: !s.rightPanelVisible })),
 
       setRightPanelTab: (tab) => set({ rightPanelTab: tab }),
+
+      setRightPanelWidth: (width) => set({ rightPanelWidth: width }),
 
       setTheme: (theme) => set({ theme }),
 
