@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { useStore } from '../../store'
 import type { TreeNode, Folder, NoteRef } from '../../types'
 import {
